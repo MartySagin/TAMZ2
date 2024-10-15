@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -23,14 +24,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView sumTextView, interestTextView;
     private BarChart barChart;
 
-    private final int DEPOSIT_STEP = 10000;  // Step size for deposit
+    private final int DEPOSIT_STEP = 10000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Find SeekBars, TextViews, and BarChart
         depositSeekBar = findViewById(R.id.depositSeekBar);
         interestSeekBar = findViewById(R.id.interestSeekBar);
         periodSeekBar = findViewById(R.id.periodSeekBar);
@@ -42,20 +42,19 @@ public class MainActivity extends AppCompatActivity {
         sumTextView = findViewById(R.id.sumTextView);
         interestTextView = findViewById(R.id.interestTextView);
 
-        // Adjust max value for deposit SeekBar (1 to 100 for steps of 10,000)
-        depositSeekBar.setMax(100);  // Set max value to 100 (for 1,000,000 / 10,000 step size)
+        depositSeekBar.setMax(100);
+        depositSeekBar.setProgress(10);
 
-        // Set initial values
         updateValues();
 
-        // Set SeekBar change listeners
         depositSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // Multiply progress by the step size
+
                 int deposit = progress * DEPOSIT_STEP;
+
                 depositValueTextView.setText(deposit + " Kč");
-                updateValues(); // Recalculate and update TextViews
+                updateValues();
             }
 
             @Override
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 interestValueTextView.setText(progress + " %");
-                updateValues(); // Recalculate and update TextViews
+                updateValues();
             }
 
             @Override
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 periodValueTextView.setText(progress + " roků");
-                updateValues(); // Recalculate and update TextViews
+                updateValues();
             }
 
             @Override
@@ -94,55 +93,67 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Method to calculate and update the values of sum and interest
+
     private void updateValues() {
-        // Get values from SeekBars
-        int deposit = depositSeekBar.getProgress() * DEPOSIT_STEP;  // Multiply by step size
+
+        int deposit = depositSeekBar.getProgress() * DEPOSIT_STEP;
         int interestRate = interestSeekBar.getProgress();
         int period = periodSeekBar.getProgress();
 
-        // Calculate compound interest
         double interestRateDecimal = interestRate / 100.0;
         double finalAmount = deposit * Math.pow((1 + interestRateDecimal), period);
         double interestEarned = finalAmount - deposit;
 
-        // Update TextViews with calculated values
-        sumTextView.setText("Naspořená suma: " + String.format("%,.2f Kč", finalAmount));
-        interestTextView.setText("Z toho úroky: " + String.format("%,.2f Kč", interestEarned));
+        sumTextView.setText("Naspořená suma: " + String.format("%,.0f Kč", finalAmount));
+        interestTextView.setText("Z toho úroky: " + String.format("%,.0f Kč", interestEarned));
 
-        // Update BarChart with new data
         updateChart(deposit, (float) interestEarned);
     }
 
-    // Method to update the BarChart based on the values of deposit and interest earned
     private void updateChart(int deposit, float interestEarned) {
         ArrayList<BarEntry> barEntries = new ArrayList<>();
 
-        // Add entries for the deposit and interest
-        barEntries.add(new BarEntry(0, deposit));           // Vklad
-        barEntries.add(new BarEntry(1, interestEarned));    // Úrok
+        barEntries.add(new BarEntry(0, deposit));
+        barEntries.add(new BarEntry(1, interestEarned));
 
-        // Create the data set
+
         BarDataSet barDataSet = new BarDataSet(barEntries, "Vklad/Úroky");
-        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);  // Set colors for the bars
+        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
 
-        // Create the BarData object with the data set
+
         BarData barData = new BarData(barDataSet);
-        barData.setBarWidth(0.3f);  // Set custom bar width
+        barData.setBarWidth(0.3f);
 
-        // Set value formatter to display values above bars
         barData.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return String.format("%,.0f", value);  // Format values as whole numbers
+                return String.format("%,.0f", value);
             }
         });
 
-        // Configure the chart
+
         barChart.setData(barData);
 
-        barChart.getDescription().setEnabled(false);  // Disable description
 
-        barChart.invalidate();  // Refresh the chart
+
+        barChart.getAxisLeft().setAxisMinimum(0);
+        barChart.getAxisRight().setAxisMinimum(0);
+
+        barChart.getAxisLeft().setDrawGridLines(false);
+        barChart.getAxisRight().setDrawGridLines(false);
+        barChart.getXAxis().setDrawGridLines(false);
+
+        barDataSet.setValueTextSize(16f);
+
+        barChart.getAxisLeft().setAxisMinimum(0);
+        barChart.getAxisRight().setAxisMinimum(0);
+        barChart.setExtraOffsets(0, 0, 0, 5);
+
+        barDataSet.setDrawValues(true);
+        barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        barChart.getDescription().setEnabled(false);
+
+        barChart.invalidate();
     }
 }
