@@ -21,16 +21,14 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        // Získání seznamu historyList z MainActivity
         historyList = getIntent().getStringArrayListExtra("HISTORY_LIST");
 
-        // Inicializace RecyclerView a nastavení adapteru
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         historyAdapter = new HistoryAdapter(this, historyList);
         recyclerView.setAdapter(historyAdapter);
 
-        loadHistory(); // Načtení historie z SharedPreferences
+        loadHistory();
 
     }
 
@@ -39,9 +37,9 @@ public class HistoryActivity extends AppCompatActivity {
         Set<String> savedHistory = sharedPreferences.getStringSet("historyList", new HashSet<>());
 
         historyList.clear();
-        historyList.addAll(savedHistory); // Přidání všech položek do ArrayListu
+        historyList.addAll(savedHistory);
 
-        historyAdapter.notifyDataSetChanged(); // Aktualizace RecyclerView
+        historyAdapter.notifyDataSetChanged();
     }
 
 

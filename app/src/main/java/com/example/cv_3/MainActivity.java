@@ -74,10 +74,10 @@ public class MainActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.saveButton);
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+
         loadHistory();
-
         loadGraphColors();
-
         updateValues();
 
         depositSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -226,17 +226,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (requestCode == 2 && resultCode == RESULT_OK) {
-            // Pokud se vrátí výsledek z SettingsActivity
             if (data != null) {
                 int newDepositColor = data.getIntExtra("depositColor", Color.RED);
                 int newInterestColor = data.getIntExtra("interestColor", Color.BLUE);
 
-                // Aktualizujeme uložené barvy pro grafy
                 depositColor = newDepositColor;
                 interestColor = newInterestColor;
 
                 loadGraphColors();
-                // Hned vykreslíme grafy s novými barvami
                 updateValues();
             }
         }

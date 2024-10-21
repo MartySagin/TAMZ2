@@ -38,17 +38,13 @@ public class ChartTypeActivity extends AppCompatActivity {
         previewPieChart = findViewById(R.id.previewPieChart);
         View invisiblePieChartOverlay = findViewById(R.id.invisiblePieChartOverlay);
 
-        // Získání dat z MainActivity (můžeš je přenést přes Intent nebo znovu spočítat)
         int deposit = getIntent().getIntExtra("DEPOSIT", 100000); // Příklad dat
         float interestEarned = getIntent().getFloatExtra("INTEREST_EARNED", 20000); // Příklad dat
 
-        // Vykreslení BarChart
         setupBarChart(deposit, interestEarned);
 
-        // Vykreslení PieChart
         setupPieChart(deposit, interestEarned);
 
-        // Nastavení kliknutí na CardView pro BarChart
         findViewById(R.id.previewBarChart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,7 +52,6 @@ public class ChartTypeActivity extends AppCompatActivity {
             }
         });
 
-        // Nastavení kliknutí na neviditelný View přes PieChart
         invisiblePieChartOverlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,7 +60,6 @@ public class ChartTypeActivity extends AppCompatActivity {
         });
     }
 
-    // Metoda pro vykreslení BarChart
     private void setupBarChart(int deposit, float interestEarned) {
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         barEntries.add(new BarEntry(0, deposit));
@@ -99,7 +93,6 @@ public class ChartTypeActivity extends AppCompatActivity {
         previewBarChart.invalidate(); // Refresh
     }
 
-    // Metoda pro vykreslení PieChart
     private void setupPieChart(int deposit, float interestEarned) {
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
         pieEntries.add(new PieEntry(deposit, "Vklad"));
@@ -119,11 +112,13 @@ public class ChartTypeActivity extends AppCompatActivity {
         previewPieChart.invalidate(); // Refresh
     }
 
-    // Metoda pro návrat vybraného typu grafu
     private void returnChartType(int chartType) {
         Intent resultIntent = new Intent();
+
         resultIntent.putExtra(EXTRA_CHART_TYPE, chartType);
+
         setResult(RESULT_OK, resultIntent);
+
         finish();
     }
 }

@@ -40,13 +40,10 @@ public class SettingsActivity extends AppCompatActivity {
         saveSettingsButton = findViewById(R.id.saveSettingsButton);
         settingsBarChart = findViewById(R.id.settingsBarChart);
 
-        // Načti uložené barvy
         loadSettings();
 
-        // Nastavení výchozího grafu
         setupBarChart(depositColor, interestColor);
 
-        // Výběr barvy pro vklad
         depositColorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,14 +52,13 @@ public class SettingsActivity extends AppCompatActivity {
                     public void onColorSelected(int color) {
                         depositColor = color;
                         depositColorButton.setBackgroundColor(depositColor);
-                        // Aktualizuj BarChart s novou barvou vkladu
+
                         setupBarChart(depositColor, interestColor);
                     }
                 });
             }
         });
 
-        // Výběr barvy pro úroky
         interestColorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,14 +67,13 @@ public class SettingsActivity extends AppCompatActivity {
                     public void onColorSelected(int color) {
                         interestColor = color;
                         interestColorButton.setBackgroundColor(interestColor);
-                        // Aktualizuj BarChart s novou barvou úroků
+
                         setupBarChart(depositColor, interestColor);
                     }
                 });
             }
         });
 
-        // Uložit nastavení barev
         saveSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +82,6 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    // Nastavení BarChart
     private void setupBarChart(int depositColor, int interestColor) {
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         barEntries.add(new BarEntry(0, 100000));  // Ukázkový vklad
@@ -120,20 +114,18 @@ public class SettingsActivity extends AppCompatActivity {
 
         settingsBarChart.getDescription().setEnabled(false);
 
-        settingsBarChart.invalidate(); // Refresh grafu
+        settingsBarChart.invalidate();
     }
 
-    // Načíst nastavení
     private void loadSettings() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        depositColor = settings.getInt("depositColor", Color.RED); // Výchozí barva
-        interestColor = settings.getInt("interestColor", Color.BLUE); // Výchozí barva
+        depositColor = settings.getInt("depositColor", Color.RED);
+        interestColor = settings.getInt("interestColor", Color.BLUE);
 
         depositColorButton.setBackgroundColor(depositColor);
         interestColorButton.setBackgroundColor(interestColor);
     }
 
-    // Uložit nastavení
     private void saveSettings() {
         SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
 
@@ -143,11 +135,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Nastavení uloženo", Toast.LENGTH_SHORT).show();
 
-        setResult(RESULT_OK, new Intent()); // Nastaví výsledek pro MainActivity
-        finish(); // Ukonči aktivitu
+        setResult(RESULT_OK, new Intent());
+        finish();
     }
 
-    // Otevřít Color Picker
     private void openColorPicker(int initialColor, final ColorPickerCallback callback) {
         ColorPickerDialog.Builder builder = new ColorPickerDialog.Builder(this)
                 .setTitle("Vyber barvu")
@@ -164,7 +155,6 @@ public class SettingsActivity extends AppCompatActivity {
         builder.show();
     }
 
-    // Callback pro zvolení barvy
     interface ColorPickerCallback {
         void onColorSelected(int color);
     }

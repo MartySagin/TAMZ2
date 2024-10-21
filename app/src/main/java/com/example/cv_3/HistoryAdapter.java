@@ -50,20 +50,20 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         historyList.remove(position); // Odstraň položku ze seznamu
         notifyItemRemoved(position);  // Aktualizace UI
 
-        // Aktualizuj SharedPreferences
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE);
+
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        Set<String> updatedSet = new HashSet<>(historyList); // Převod ArrayList na Set
-        editor.putStringSet("historyList", updatedSet); // Ulož aktualizovaný seznam
-        editor.apply(); // Ulož změny
+
+        Set<String> updatedSet = new HashSet<>(historyList);
+
+        editor.putStringSet("historyList", updatedSet);
+        editor.apply();
     }
 
     @Override
     public int getItemCount() {
         return historyList.size();
     }
-
-    // ViewHolder class for the RecyclerView
     public static class HistoryViewHolder extends RecyclerView.ViewHolder {
 
         TextView historyTextView;
@@ -71,6 +71,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
         public HistoryViewHolder(@NonNull View itemView) {
             super(itemView);
+
             historyTextView = itemView.findViewById(R.id.historyTextView);
             deleteButton = itemView.findViewById(R.id.deleteButton);
         }
