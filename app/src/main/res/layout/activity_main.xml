@@ -61,9 +61,16 @@
             android:layout_width="match_parent"
             android:layout_height="200dp" />
 
+        <!-- PieChart from MPAndroidChart (initially hidden) -->
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pieChart"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:visibility="gone" />
+
     </androidx.cardview.widget.CardView>
 
-    <!-- Third CardView for sliders -->
+    <!-- Third CardView for sliders and the save button -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView3"
         android:layout_width="0dp"
@@ -147,6 +154,13 @@
                 android:text="1 rok"
                 android:gravity="center" />
 
+            <!-- Save button -->
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Uložit"
+                android:layout_marginTop="16dp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

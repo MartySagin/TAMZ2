@@ -1,0 +1,59 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChartTypeActivity">
+
+    <!-- CardView for BarChart -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/barChartCardView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/previewBarChart"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- CardView for PieChart wrapped in FrameLayout -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/pieChartCardView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/barChartCardView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- FrameLayout containing PieChart and invisible clickable View -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/previewPieChart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- Invisible clickable View -->
+            <View
+                android:id="@+id/invisiblePieChartOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:clickable="true"
+                android:focusable="true" />
+        </FrameLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
