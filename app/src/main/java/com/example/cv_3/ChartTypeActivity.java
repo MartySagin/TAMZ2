@@ -1,6 +1,7 @@
 package com.example.cv_3;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +32,8 @@ public class ChartTypeActivity extends AppCompatActivity {
     private PieChart previewPieChart;
 
     private int depositColor, interestColor;
+
+    private static final String PREFS_NAME = "AppSettings";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +78,8 @@ public class ChartTypeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish(); // This closes the activity and returns to the previous one
+            finish();
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -137,6 +141,12 @@ public class ChartTypeActivity extends AppCompatActivity {
         Intent resultIntent = new Intent();
 
         resultIntent.putExtra(EXTRA_CHART_TYPE, chartType);
+
+        SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("chartType", chartType);
+        editor.apply();
 
         setResult(RESULT_OK, resultIntent);
 

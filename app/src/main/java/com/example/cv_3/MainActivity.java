@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "AppSettings";
     private static final String HISTORY_KEY = "historyList";
 
+    private int chartType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,15 +80,32 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
+        chartType = sharedPreferences.getInt("chartType", 1);
+
+        if (chartType == 1) {
+            barChart.setVisibility(View.VISIBLE);
+            pieChart.setVisibility(View.GONE);
+        } else {
+            pieChart.setVisibility(View.VISIBLE);
+            barChart.setVisibility(View.GONE);
+        }
+
         loadHistory();
         loadGraphColors();
+        loadValues();
+        loadChartType();
+
         updateValues();
+
+
 
         depositSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
                 int deposit = progress * DEPOSIT_STEP;
+
+                sharedPreferences.edit().putInt("deposit", deposit).apply();
 
                 depositValueTextView.setText(deposit + " Kč");
                 updateValues();
@@ -103,6 +122,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 interestValueTextView.setText(progress + " %");
+                sharedPreferences.edit().putInt("interest", progress).apply();
+
                 updateValues();
             }
 
@@ -117,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 periodValueTextView.setText(progress + " roků");
+                sharedPreferences.edit().putInt("period", progress).apply();
+
                 updateValues();
             }
 
@@ -136,6 +159,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void loadChartType() {
+        chartType = sharedPreferences.getInt("chartType", ChartTypeActivity.CHART_TYPE_BAR);
+    }
+
+    private void loadValues(){
+        int deposit = sharedPreferences.getInt("deposit", 100000);
+        int interest = sharedPreferences.getInt("interest", 0);
+        int period = sharedPreferences.getInt("period", 1);
+
+        depositSeekBar.setProgress(deposit / DEPOSIT_STEP);
+        interestSeekBar.setProgress(interest);
+        periodSeekBar.setProgress(period);
+
+        depositValueTextView.setText(deposit + " Kč");
+        interestValueTextView.setText(interest + " %");
+        periodValueTextView.setText(period + " roků");
+    }
+
 
     private void loadGraphColors() {
         SharedPreferences settings = getSharedPreferences("AppSettings", MODE_PRIVATE);
