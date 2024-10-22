@@ -2,6 +2,8 @@ package com.example.cv_3;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +17,9 @@ public class HistoryActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private HistoryAdapter historyAdapter;
     private ArrayList<String> historyList;
+
+    private static final String PREFS_NAME = "AppSettings";
+    private static final String HISTORY_KEY = "historyList";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +35,8 @@ public class HistoryActivity extends AppCompatActivity {
 
         loadHistory();
 
+
+
     }
 
     private void loadHistory() {
@@ -40,6 +47,29 @@ public class HistoryActivity extends AppCompatActivity {
         historyList.addAll(savedHistory);
 
         historyAdapter.notifyDataSetChanged();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    public void clearHistory() {
+        historyList.clear();
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(HISTORY_KEY);
+        editor.apply();
+
+        if (historyAdapter != null) {
+            historyAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 

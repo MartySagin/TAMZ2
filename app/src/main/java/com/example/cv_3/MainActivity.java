@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
+import android.icu.util.TimeZone;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,8 +35,8 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SeekBar depositSeekBar, interestSeekBar, periodSeekBar;
-    private TextView depositValueTextView, interestValueTextView, periodValueTextView;
+    private SeekBar depositSeekBar, interestSeekBar, periodSeekBar, monthlyDepositSeekBar;
+    private TextView depositValueTextView, interestValueTextView, periodValueTextView, monthlyDepositValueTextView;
     private TextView sumTextView, interestTextView;
     private BarChart barChart;
     private PieChart pieChart;
@@ -59,12 +60,14 @@ public class MainActivity extends AppCompatActivity {
         depositSeekBar = findViewById(R.id.depositSeekBar);
         interestSeekBar = findViewById(R.id.interestSeekBar);
         periodSeekBar = findViewById(R.id.periodSeekBar);
+
         barChart = findViewById(R.id.barChart);
         pieChart = findViewById(R.id.pieChart);
 
         depositValueTextView = findViewById(R.id.depositValueTextView);
         interestValueTextView = findViewById(R.id.interestValueTextView);
         periodValueTextView = findViewById(R.id.periodValueTextView);
+
         sumTextView = findViewById(R.id.sumTextView);
         interestTextView = findViewById(R.id.interestTextView);
 
@@ -74,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.saveButton);
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
 
         loadHistory();
         loadGraphColors();
@@ -125,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) { }
         });
 
+
+
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,17 +139,25 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadGraphColors() {
         SharedPreferences settings = getSharedPreferences("AppSettings", MODE_PRIVATE);
-        depositColor = settings.getInt("depositColor", Color.RED); // Výchozí červená pro vklad
-        interestColor = settings.getInt("interestColor", Color.BLUE); // Výchozí modrá pro úroky
+
+        depositColor = settings.getInt("depositColor", Color.RED);
+        interestColor = settings.getInt("interestColor", Color.BLUE);
     }
 
     private void saveCalculationToHistory() {
-        String currentTime = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault()).format(new Date());
+        loadHistory();
+
+        TimeZone timeZone = TimeZone.getTimeZone("Europe/Prague");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+        dateFormat.setTimeZone(timeZone);
+        String currentTime = dateFormat.format(new Date());
+
         String sum = sumTextView.getText().toString();
         String interest = interestTextView.getText().toString();
 
         String historyEntry = "Datum: " + currentTime + "\n" + sum + "\n" + interest + "\n";
         historyList.add(historyEntry);
+
         saveHistory();
 
         Toast.makeText(this, "Uloženo", Toast.LENGTH_SHORT).show();
@@ -162,6 +174,11 @@ public class MainActivity extends AppCompatActivity {
         Set<String> historySet = sharedPreferences.getStringSet(HISTORY_KEY, new HashSet<>());
         historyList.clear();
         historyList.addAll(historySet);
+    }
+
+    public void clearHistory() {
+        historyList.clear();
+        saveHistory();
     }
 
     @Override
@@ -186,12 +203,16 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("DEPOSIT", deposit);
             intent.putExtra("INTEREST_EARNED", interestEarned);
 
+            intent.putExtra("DEPOSIT_COLOR", depositColor);
+            intent.putExtra("INTEREST_COLOR", interestColor);
+
             startActivityForResult(intent, 1);
 
             return true;
         }else if (id == R.id.historyMenu) {
             Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
             intent.putStringArrayListExtra("HISTORY_LIST", historyList);
+
             startActivity(intent);
 
             return true;
@@ -216,10 +237,12 @@ public class MainActivity extends AppCompatActivity {
                 if (chartType == ChartTypeActivity.CHART_TYPE_BAR) {
                     barChart.setVisibility(View.VISIBLE);
                     pieChart.setVisibility(View.GONE);
+
                     updateChart(depositSeekBar.getProgress() * DEPOSIT_STEP, (float) calculateInterest());
                 } else if (chartType == ChartTypeActivity.CHART_TYPE_PIE) {
                     pieChart.setVisibility(View.VISIBLE);
                     barChart.setVisibility(View.GONE);
+
                     updatePieChart(depositSeekBar.getProgress() * DEPOSIT_STEP, (float) calculateInterest());
                 }
             }

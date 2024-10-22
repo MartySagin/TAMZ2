@@ -2,6 +2,7 @@ package com.example.cv_3;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -29,6 +30,8 @@ public class ChartTypeActivity extends AppCompatActivity {
     private BarChart previewBarChart;
     private PieChart previewPieChart;
 
+    private int depositColor, interestColor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,12 +41,17 @@ public class ChartTypeActivity extends AppCompatActivity {
         previewPieChart = findViewById(R.id.previewPieChart);
         View invisiblePieChartOverlay = findViewById(R.id.invisiblePieChartOverlay);
 
-        int deposit = getIntent().getIntExtra("DEPOSIT", 100000); // Příklad dat
-        float interestEarned = getIntent().getFloatExtra("INTEREST_EARNED", 20000); // Příklad dat
+        int deposit = getIntent().getIntExtra("DEPOSIT", 100000);
+        float interestEarned = getIntent().getFloatExtra("INTEREST_EARNED", 20000);
 
-        setupBarChart(deposit, interestEarned);
+        depositColor = getIntent().getIntExtra("DEPOSIT_COLOR", 0xFF0000FF);
+        interestColor = getIntent().getIntExtra("INTEREST_COLOR", 0xFF00FF00);
 
-        setupPieChart(deposit, interestEarned);
+        setupBarChart(deposit, interestEarned, depositColor, interestColor);
+
+        setupPieChart(deposit, interestEarned, depositColor, interestColor);
+
+
 
         findViewById(R.id.previewBarChart).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,15 +66,28 @@ public class ChartTypeActivity extends AppCompatActivity {
                 returnChartType(CHART_TYPE_PIE);
             }
         });
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
-    private void setupBarChart(int deposit, float interestEarned) {
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // This closes the activity and returns to the previous one
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setupBarChart(int deposit, float interestEarned, int depositColor, int interestColor) {
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         barEntries.add(new BarEntry(0, deposit));
         barEntries.add(new BarEntry(1, interestEarned));
 
         BarDataSet barDataSet = new BarDataSet(barEntries, "Vklad/Úroky");
-        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        barDataSet.setColors(depositColor, interestColor);
 
         BarData barData = new BarData(barDataSet);
         barData.setBarWidth(0.3f);
@@ -93,13 +114,13 @@ public class ChartTypeActivity extends AppCompatActivity {
         previewBarChart.invalidate(); // Refresh
     }
 
-    private void setupPieChart(int deposit, float interestEarned) {
+    private void setupPieChart(int deposit, float interestEarned, int depositColor, int interestColor) {
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
         pieEntries.add(new PieEntry(deposit, "Vklad"));
         pieEntries.add(new PieEntry(interestEarned, "Úroky"));
 
         PieDataSet pieDataSet = new PieDataSet(pieEntries, "Vklad/Úroky");
-        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        pieDataSet.setColors(depositColor, interestColor);
 
         PieData pieData = new PieData(pieDataSet);
         previewPieChart.setData(pieData);
